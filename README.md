@@ -9,6 +9,12 @@
 * Heap Allocation
 * Keyboard Input
 
+## Instructions for Running the Kernel
+* Install QEMU
+* Download the Latest Release
+* Run this Command: qemu-system-x86_64 -drive format=raw,file=[location of BIN file
+* The system is running
+
 ## Commands
 * echo - Echos back your Message
 * about - Kernel info
