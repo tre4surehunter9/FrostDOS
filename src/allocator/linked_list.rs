@@ -1,3 +1,4 @@
+// Copyright (c) 2026 tre4surehunter9
 use super::{align_up,Locked};
 use core::{mem,ptr};
 use alloc::alloc::{GlobalAlloc,Layout};

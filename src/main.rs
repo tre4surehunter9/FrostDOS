@@ -1,4 +1,4 @@
-// main.rs
+// Copyright (c) 2026 tre4surehunter9
 
 #![no_std]
 #![no_main]

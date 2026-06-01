@@ -1,4 +1,4 @@
-// Serial Output Copyright 2026, FrostDOS Industries
+// Copyright (c) 2026 tre4surehunter9
 use uart_16550::{Config, Uart16550Tty, backend::PioBackend};
 use spin::Mutex;
 use lazy_static::lazy_static;

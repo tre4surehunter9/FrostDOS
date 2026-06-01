@@ -1,4 +1,4 @@
-
+// Copyright (c) 2026 tre4surehunter9
 pub struct BumpAllocator {
     heap_start: usize,
     heap_end: usize,

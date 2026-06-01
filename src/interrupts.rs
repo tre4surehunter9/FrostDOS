@@ -1,5 +1,4 @@
-// CPU Interrupts, Copyright 2026 FrostDOS Industries
-
+// Copyright (c) 2026 tre4surehunter9
 
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 use crate::println;

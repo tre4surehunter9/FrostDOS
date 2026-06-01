@@ -1,3 +1,4 @@
+// Copyright (c) 2026 tre4surehunter9
 #![no_std]
 
 #![cfg_attr(test, no_main)]

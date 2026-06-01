@@ -1,4 +1,4 @@
-// VGA Buffer, Copyright 2026 FrostDOS Incorporation
+// Copyright (c) 2026 tre4surehunter9
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -1,3 +1,4 @@
+// Copyright (c) 2026 tre4surehunter9
 use alloc::alloc::Layout;
 use core::{mem, ptr::NonNull};
 use super::Locked;
