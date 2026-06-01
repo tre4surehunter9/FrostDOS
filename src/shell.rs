@@ -16,6 +16,7 @@ pub fn process_command(input: &str) {
         "echo" => cmd_echo(args),
         "clear" => cmd_clear(),
         "about" => cmd_about(),
+        "reboot" => cmd_reboot(),
         _ => {
             println!("Unknown command: '{}'. Type 'help' for a list of commands.", command);
         }
@@ -29,6 +30,7 @@ fn cmd_help() {
     println!("  echo <text> - Print text to the screen");
     println!("  clear       - Clear the screen");
     println!("  about       - Show information about this kernel");
+    println!("  reboot      - Reboot the system")
 }
 
 fn cmd_echo(args: &str) {
@@ -48,4 +50,17 @@ fn cmd_about() {
 pub fn print_welcome() {
     println!("FrostDOS v0.2.0");
     println!("----------------------------------------");
+}
+
+fn cmd_reboot() {
+    use x86_64::instructions::port::Port;
+    println!("Rebooting...");
+    unsafe {
+        let mut port: Port<u8> = Port::new(0x64);
+        port.write(0xFE_u8);
+    }
+
+    loop {
+        x86_64::instructions::hlt();
+    }
 }
