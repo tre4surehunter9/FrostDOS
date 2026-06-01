@@ -1,7 +1,8 @@
 # FrostDOS
 
 ## A OS (more of a kernel) coded entirely in Rust
-[Example Image](Screenshot_20260601_135311.png)
+
+[Screenshot](Screenshot_20260601_135311.png)
 
 ## Features
 * Basic Shell
