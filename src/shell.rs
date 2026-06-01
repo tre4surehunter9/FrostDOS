@@ -42,13 +42,13 @@ fn cmd_clear() {
 }
 
 fn cmd_about() {
-    println!("FrostDOS v0.2.0 - A kernel in Rust");
+    println!("FrostDOS v0.2.1 - A kernel in Rust");
     println!("Based on Philipp Oppermann's 'Writing an OS in Rust'");
     println!("https://os.phil-opp.com/");
 }
 
 pub fn print_welcome() {
-    println!("FrostDOS v0.2.0");
+    println!("FrostDOS v0.2.1");
     println!("----------------------------------------");
 }
 
