@@ -15,6 +15,7 @@
 * clear - Clear the screen
 * help - Show the help message
 * reboot - Reboots the system
+* panic - Causes system panic
 
 ## Credits
 Philipp Oppermann for his 'Writing an OS in Rust' guide
