@@ -1,4 +1,6 @@
 
+use alloc::string::String;
+use alloc::vec::Vec;
 
 use conquer_once::spin::OnceCell;
 use crossbeam_queue::ArrayQueue;
@@ -58,7 +60,7 @@ pub(crate) fn add_scancode(scancode: u8) {
         if let Err(_) = queue.push(scancode) {
             println!("WARNING: scancode queue full; dropping keyboard input");
         } else {
-            WAKER.wake(); // new
+            WAKER.wake();
         }
     } else {
         println!("WARNING: scancode queue uninitialized");
@@ -80,6 +82,62 @@ pub async fn print_keypresses() {
                 match key {
                     DecodedKey::Unicode(character) => print!("{}", character),
                     _ => {},
+                }
+            }
+        }
+    }
+}
+
+
+use crate::shell;
+use crate::vga_buffer::{draw_cursor, erase_cursor};
+
+pub async fn run_shell() {
+    let mut scancodes = ScancodeStream::new();
+    let mut keyboard = Keyboard::new(
+        ScancodeSet1::new(),
+                                     layouts::Us104Key,
+                                     HandleControl::Ignore,
+    );
+
+    let mut input_buffer = String::new();
+
+    print!("FrostDOS> ");
+    draw_cursor();
+
+    loop {
+        if let Some(scancode) = scancodes.next().await {
+            if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
+                if let Some(key) = keyboard.process_keyevent(key_event) {
+                    match key {
+
+                        DecodedKey::Unicode('\n') => {
+                            erase_cursor();
+                            println!();
+                            shell::process_command(&input_buffer);
+                            input_buffer.clear();
+                            print!("FrostDOS> ");
+                            draw_cursor();
+                        }
+
+                        DecodedKey::Unicode('\x08') => {
+                            if !input_buffer.is_empty() {
+                                erase_cursor();
+                                input_buffer.pop();
+                                print!("\x08");
+                                draw_cursor();
+                            }
+                        }
+
+                        DecodedKey::Unicode(c) => {
+                            erase_cursor();
+                            input_buffer.push(c);
+                            print!("{}", c);
+                            draw_cursor();
+                        }
+
+                        DecodedKey::RawKey(_) => {}
+                    }
                 }
             }
         }

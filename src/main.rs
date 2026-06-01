@@ -77,8 +77,9 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     use frostdos::allocator;
     use frostdos::task::keyboard;
     use frostdos::task::executor::Executor;
+    use frostdos::task::keyboard::run_shell;
     // welcome message
-    println!("Welcome to FrostDOS 0.1.0{}", "!");
+    frostdos::shell::print_welcome();
     frostdos::init();
 
     let mut frame_allocator = unsafe {
@@ -108,14 +109,12 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     let x = Box::new(41);
 
     let mut executor = Executor::new();
-    executor.spawn(Task::new(example_task()));
-    executor.spawn(Task::new(keyboard::print_keypresses()));
+    executor.spawn(Task::new(run_shell()));
     executor.run();
 
     frostdos::hlt_loop();
 }
 
-// in main.rs
 #[cfg(not(test))]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
@@ -129,11 +128,3 @@ fn panic(info: &PanicInfo) -> ! {
     frostdos::test_panic_handler(info)
 }
 
-async fn async_number() -> u32 {
-    42
-}
-
-async fn example_task() {
-    let number = async_number().await;
-    println!("async number: {}", number);
-}
