@@ -102,7 +102,7 @@ pub async fn run_shell() {
 
     let mut input_buffer = String::new();
 
-    print!("FrostDOS> ");
+    print_prompt();
     draw_cursor();
 
     loop {
@@ -116,7 +116,7 @@ pub async fn run_shell() {
                             println!();
                             shell::process_command(&input_buffer);
                             input_buffer.clear();
-                            print!("FrostDOS> ");
+                            print_prompt();
                             draw_cursor();
                         }
 
@@ -142,4 +142,9 @@ pub async fn run_shell() {
             }
         }
     }
+}
+
+fn print_prompt() {
+    let cwd = crate::filesystem::CWD.lock().clone();
+    crate::print!("FrostDOS:{} > ", cwd);
 }
