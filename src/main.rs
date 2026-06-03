@@ -89,28 +89,13 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
     let mut mapper = unsafe { memory::init(phys_mem_offset) };
 
-    let page = Page::containing_address(VirtAddr::new(0));
-    memory::create_example_mapping(page, &mut mapper, &mut frame_allocator);
-
     allocator::init_heap(&mut mapper, &mut frame_allocator)
     .expect("heap initialization failed");
-
-    let heap_value = Box::new(41);
-
-    let mut vec = Vec::new();
-    for i in 0..500 {
-        vec.push(i);
-    }
-
-    let reference_counted = Rc::new(vec![1, 2, 3]);
-    let cloned_reference = reference_counted.clone();
-    core::mem::drop(reference_counted);
-
-    let x = Box::new(41);
 
     let mut executor = Executor::new();
     executor.spawn(Task::new(run_shell()));
     executor.run();
+
 
     frostdos::hlt_loop();
 }
