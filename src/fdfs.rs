@@ -1,6 +1,4 @@
-// src/fdfs.rs
-// FDFS - FrostDOS Filesystem
-// A simple in-memory filesystem with full-length filename support.
+// Copyright (c) 2026 tre4surehunter9
 
 use alloc::string::{String, ToString};
 use alloc::vec::Vec;
