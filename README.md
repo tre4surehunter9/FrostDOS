@@ -1,6 +1,6 @@
 # FrostDOS
 
-## A OS (more of a kernel) coded entirely in Rust
+## An OS (more of a kernel) coded entirely in Rust
 
 ![Screenshot](Screenshot_20260603_004915.png)
 
