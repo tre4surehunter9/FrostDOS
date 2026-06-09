@@ -263,4 +263,17 @@ impl Writer {
     }
 }
 
+impl Writer {
+    pub fn set_color(&mut self, fg: Color, bg: Color) {
+        self.color_code = ColorCode::new(fg, bg);
+    }
+}
+
+impl Writer {
+    pub fn set_cursor_pos(&mut self, row: usize, col: usize) {
+        self.row_position    = row.min(BUFFER_HEIGHT - 1);
+        self.column_position = col.min(BUFFER_WIDTH  - 1);
+    }
+}
+
 

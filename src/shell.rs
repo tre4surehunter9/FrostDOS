@@ -29,6 +29,7 @@ pub fn process_command(input: &str) {
         "rm"     => cmd_rm(args),
         "cd"     => cmd_cd(args),
         "pwd"    => cmd_pwd(),
+        "edit" => cmd_edit(args),
         _ => {
             println!("Unknown command: '{}'. Type 'help' for a list of commands.", command);
         }
@@ -51,6 +52,7 @@ fn cmd_help() {
     println!("  rm <file>           - Remove file or empty directory");
     println!("  cd <dir>            - Change directory");
     println!("  pwd                 - Print working directory");
+    println!("  edit <file>         - Open file in the text editor");
 }
 
 
@@ -63,13 +65,13 @@ fn cmd_clear() {
 }
 
 fn cmd_about() {
-    println!("FrostDOS v0.3.0 - A kernel in Rust");
+    println!("FrostDOS v0.3.1 - A kernel in Rust");
     println!("Based on Philipp Oppermann's 'Writing an OS in Rust'");
     println!("https://os.phil-opp.com/");
 }
 
 pub fn print_welcome() {
-    println!("FrostDOS v0.3.0");
+    println!("FrostDOS v0.3.1");
     println!("----------------------------------------");
 }
 
@@ -189,4 +191,13 @@ fn cmd_cd(args: &str) {
 fn cmd_pwd() {
     let cwd = filesystem::CWD.lock().clone();
     println!("{}", cwd);
+}
+
+fn cmd_edit(args: &str) {
+    if args.is_empty() {
+        println!("Usage: edit <filename>");
+        return;
+    }
+    let path = crate::filesystem::resolve_path(args);
+    crate::editor::open(&path);
 }

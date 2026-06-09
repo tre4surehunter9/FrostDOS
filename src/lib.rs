@@ -106,6 +106,7 @@ pub mod task;
 pub mod shell;
 pub mod fdfs;
 pub mod filesystem;
+pub mod editor;
 
 
 extern crate alloc;

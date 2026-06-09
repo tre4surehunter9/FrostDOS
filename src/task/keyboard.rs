@@ -1,6 +1,5 @@
 // Copyright (c) 2026 tre4surehunter9
 use alloc::string::String;
-use alloc::vec::Vec;
 
 use conquer_once::spin::OnceCell;
 use crossbeam_queue::ArrayQueue;
@@ -8,8 +7,6 @@ use crossbeam_queue::ArrayQueue;
 static SCANCODE_QUEUE: OnceCell<ArrayQueue<u8>> = OnceCell::uninit();
 
 use crate::println;
-
-
 
 pub struct ScancodeStream {
     _private: (),
@@ -25,7 +22,6 @@ impl ScancodeStream {
 
 use core::{pin::Pin, task::{Poll, Context}};
 use futures_util::stream::Stream;
-
 use futures_util::task::AtomicWaker;
 
 static WAKER: AtomicWaker = AtomicWaker::new();
@@ -38,7 +34,6 @@ impl Stream for ScancodeStream {
             .try_get()
             .expect("scancode queue not initialized");
 
-        // fast path
         if let Some(scancode) = queue.pop() {
             return Poll::Ready(Some(scancode));
         }
@@ -53,7 +48,6 @@ impl Stream for ScancodeStream {
         }
     }
 }
-
 
 pub(crate) fn add_scancode(scancode: u8) {
     if let Ok(queue) = SCANCODE_QUEUE.try_get() {
@@ -70,34 +64,17 @@ pub(crate) fn add_scancode(scancode: u8) {
 use futures_util::stream::StreamExt;
 use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1};
 use crate::print;
-
-pub async fn print_keypresses() {
-    let mut scancodes = ScancodeStream::new();
-    let mut keyboard = Keyboard::new(ScancodeSet1::new(),
-                                     layouts::Us104Key, HandleControl::Ignore);
-
-    while let Some(scancode) = scancodes.next().await {
-        if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
-            if let Some(key) = keyboard.process_keyevent(key_event) {
-                match key {
-                    DecodedKey::Unicode(character) => print!("{}", character),
-                    _ => {},
-                }
-            }
-        }
-    }
-}
-
-
 use crate::shell;
 use crate::vga_buffer::{draw_cursor, erase_cursor};
+use crate::editor::{EDITOR, EDITOR_ACTIVE};
+use core::sync::atomic::Ordering;
 
 pub async fn run_shell() {
     let mut scancodes = ScancodeStream::new();
     let mut keyboard = Keyboard::new(
         ScancodeSet1::new(),
-                                     layouts::Us104Key,
-                                     HandleControl::Ignore,
+        layouts::Us104Key,
+        HandleControl::MapLettersToUnicode,
     );
 
     let mut input_buffer = String::new();
@@ -108,9 +85,14 @@ pub async fn run_shell() {
     loop {
         if let Some(scancode) = scancodes.next().await {
             if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
+                // Route to editor if active
+                if EDITOR_ACTIVE.load(Ordering::SeqCst) {
+                    handle_editor_key(key_event, &mut keyboard);
+                    continue;
+                }
+
                 if let Some(key) = keyboard.process_keyevent(key_event) {
                     match key {
-
                         DecodedKey::Unicode('\n') => {
                             erase_cursor();
                             println!();
@@ -119,7 +101,6 @@ pub async fn run_shell() {
                             print_prompt();
                             draw_cursor();
                         }
-
                         DecodedKey::Unicode('\x08') => {
                             if !input_buffer.is_empty() {
                                 erase_cursor();
@@ -128,18 +109,58 @@ pub async fn run_shell() {
                                 draw_cursor();
                             }
                         }
-
-                        DecodedKey::Unicode(c) => {
+                        DecodedKey::Unicode(c) if !c.is_control() => {
                             erase_cursor();
                             input_buffer.push(c);
                             print!("{}", c);
                             draw_cursor();
                         }
-
-                        DecodedKey::RawKey(_) => {}
+                        _ => {}
                     }
                 }
             }
+        }
+    }
+}
+
+fn handle_editor_key(
+    key_event: pc_keyboard::KeyEvent,
+    keyboard: &mut Keyboard<layouts::Us104Key, ScancodeSet1>,
+) {
+    use pc_keyboard::{KeyCode, KeyState};
+    if key_event.state != KeyState::Down { return; }
+
+    if let Some(key) = keyboard.process_keyevent(key_event) {
+        match key {
+            DecodedKey::Unicode('\x13') => {
+                crate::editor::save();
+                if let Some(ed) = EDITOR.lock().as_ref() { ed.render(); }
+            }
+            DecodedKey::Unicode('\x11') => {
+                crate::editor::close();
+            }
+            DecodedKey::Unicode('\n') => {
+                if let Some(ed) = EDITOR.lock().as_mut() { ed.newline(); ed.render(); }
+            }
+            DecodedKey::Unicode('\x08') => {
+                if let Some(ed) = EDITOR.lock().as_mut() { ed.backspace(); ed.render(); }
+            }
+            DecodedKey::Unicode(c) if !c.is_control() => {
+                if let Some(ed) = EDITOR.lock().as_mut() { ed.insert_char(c); ed.render(); }
+            }
+            DecodedKey::RawKey(KeyCode::ArrowUp) => {
+                if let Some(ed) = EDITOR.lock().as_mut() { ed.move_up(); ed.render(); }
+            }
+            DecodedKey::RawKey(KeyCode::ArrowDown) => {
+                if let Some(ed) = EDITOR.lock().as_mut() { ed.move_down(); ed.render(); }
+            }
+            DecodedKey::RawKey(KeyCode::ArrowLeft) => {
+                if let Some(ed) = EDITOR.lock().as_mut() { ed.move_left(); ed.render(); }
+            }
+            DecodedKey::RawKey(KeyCode::ArrowRight) => {
+                if let Some(ed) = EDITOR.lock().as_mut() { ed.move_right(); ed.render(); }
+            }
+            _ => {}
         }
     }
 }
