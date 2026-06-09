@@ -38,12 +38,12 @@ pub fn process_command(input: &str) {
 
 fn cmd_help() {
     println!("Available commands:");
-    println!("  help        - Show this help message");
-    println!("  echo <text> - Print text to the screen");
-    println!("  clear       - Clear the screen");
-    println!("  reboot      - Reboot the system");
-    println!("  panic       - Causes a system panic");
-    println!("  about       - Show information about this kernel");
+    println!("  help                - Show this help message");
+    println!("  echo <text>         - Print text to the screen");
+    println!("  clear               - Clear the screen");
+    println!("  reboot              - Reboot the system");
+    println!("  panic               - Causes a system panic");
+    println!("  about               - Show information about this kernel");
     println!("  edit <file>         - Open file in the text editor");
     println!("  ls [path]           - List directory");
     println!("  cat <file>          - Print file contents");
