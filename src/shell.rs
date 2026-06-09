@@ -24,7 +24,6 @@ pub fn process_command(input: &str) {
         "panic" => cmd_panic(),
         "ls"     => cmd_ls(args),
         "cat"    => cmd_cat(args),
-        "write"  => cmd_write(args),
         "mkdir"  => cmd_mkdir(args),
         "rm"     => cmd_rm(args),
         "cd"     => cmd_cd(args),
