@@ -6,16 +6,16 @@ use core::panic::PanicInfo;
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    frostdos::test_panic_handler(info)
+    palladiumos::test_panic_handler(info)
 }
 
-use frostdos::serial_print;
+use palladiumos::serial_print;
 
 #[unsafe(no_mangle)]
 pub extern "C" fn _start() -> ! {
     serial_print!("stack_overflow::stack_overflow...\t");
 
-    frostdos::gdt::init();
+    palladiumos::gdt::init();
     init_test_idt();
 
     stack_overflow();
@@ -37,7 +37,7 @@ lazy_static! {
         unsafe {
             idt.double_fault
             .set_handler_fn(test_double_fault_handler)
-            .set_stack_index(frostdos::gdt::DOUBLE_FAULT_IST_INDEX);
+            .set_stack_index(palladiumos::gdt::DOUBLE_FAULT_IST_INDEX);
         }
 
         idt
@@ -48,7 +48,7 @@ pub fn init_test_idt() {
     TEST_IDT.load();
 }
 
-use frostdos::{exit_qemu, QemuExitCode, serial_println};
+use palladiumos::{exit_qemu, QemuExitCode, serial_println};
 use x86_64::structures::idt::InterruptStackFrame;
 use x86_64::structures::gdt::SegmentSelector;
 use x86_64::structures::idt::InterruptDescriptorTable;

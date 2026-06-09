@@ -2,7 +2,7 @@
 #![no_std]
 #![no_main]
 #![feature(custom_test_frameworks)]
-#![test_runner(frostdos::test_runner)]
+#![test_runner(palladiumos::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
 extern crate alloc;
@@ -14,15 +14,15 @@ entry_point!(main);
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    frostdos::test_panic_handler(info)
+    palladiumos::test_panic_handler(info)
 }
 
 fn main(boot_info: &'static BootInfo) -> ! {
-    use frostdos::allocator;
-    use frostdos::memory::{self, BootInfoFrameAllocator};
+    use palladiumos::allocator;
+    use palladiumos::memory::{self, BootInfoFrameAllocator};
     use x86_64::VirtAddr;
 
-    frostdos::init();
+    palladiumos::init();
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
     let mut mapper = unsafe { memory::init(phys_mem_offset) };
     let mut frame_allocator = unsafe {
@@ -58,7 +58,7 @@ fn large_vec() {
     assert_eq!(vec.iter().sum::<u64>(), (n - 1) * n / 2);
 }
 
-use frostdos::allocator::HEAP_SIZE;
+use palladiumos::allocator::HEAP_SIZE;
 
 #[test_case]
 fn many_boxes() {
