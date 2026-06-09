@@ -14,12 +14,15 @@ i used AI for
 * the filesystem
 * the shell
 * text editor (as a guide)
+* finding bugs
 
 ## Features
 * Basic Shell
 * Heap Allocation
 * Keyboard Input
 * Filesystem
+* Scripting
+* Text Editor
 
 ## Instructions for Running the Kernel
 * Install QEMU
@@ -34,6 +37,7 @@ i used AI for
 * help                - Show the help message
 * reboot              - Reboots the system
 * panic               - Causes system panic
+* run <file>          - Runs script
 * edit <file>         - Open file in the text editor
 * ls <path>           - List directory
 * cat <file>          - Print file contents
