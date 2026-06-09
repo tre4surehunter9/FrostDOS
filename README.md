@@ -28,14 +28,19 @@ i used AI for
 * The system is running
 
 ## Commands
-* echo - Echos back your Message
-* about - Kernel info
-* clear - Clear the screen
-* help - Show the help message
-* reboot - Reboots the system
-* panic - Causes system panic
-* Filesystem commands shown in screenshot
-* edit <file> - Opens a file in the text editor
+* echo                - Echos back your Message
+* about               - Kernel info
+* clear               - Clear the screen
+* help                - Show the help message
+* reboot              - Reboots the system
+* panic               - Causes system panic
+* edit <file>         - Open file in the text editor
+* ls <path>           - List directory
+* cat <file>          - Print file contents
+* mkdir <dir>         - Create directory
+* rm <file>           - Remove file or empty directory
+* cd  <dir>           - Change directory
+* pwd                 - Print working directory
 
 ## Credits
 Philipp Oppermann for his 'Writing an OS in Rust' guide
