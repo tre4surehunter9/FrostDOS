@@ -1,4 +1,4 @@
-# FrostDOS
+# PalladiumOS (Formerly FrostDOS)
 
 ## An OS (more of a kernel) coded entirely in Rust
 
