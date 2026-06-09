@@ -1,6 +1,6 @@
 [package]
-name = "frostdos"
-version = "0.1.0"
+name = "palladiumos"
+version = "0.3.1"
 edition = "2024"
 
 [package.metadata.bootimage]
@@ -54,6 +54,6 @@ panic = "abort"
 panic = "abort"
 
 [[bin]]
-name ="frostdos"
+name ="palladiumos"
 test = true
 bench = false

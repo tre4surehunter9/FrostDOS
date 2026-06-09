@@ -167,5 +167,5 @@ fn handle_editor_key(
 
 fn print_prompt() {
     let cwd = crate::filesystem::CWD.lock().clone();
-    crate::print!("FrostDOS:{} > ", cwd);
+    crate::print!("PalladiumOS:{} > ", cwd);
 }

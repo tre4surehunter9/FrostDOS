@@ -59,9 +59,9 @@ mod serial;
 mod memory;
 
 
-use frostdos::task::{Task, simple_executor::SimpleExecutor};
+use palladiumos::task::{Task, simple_executor::SimpleExecutor};
 use bootloader::{BootInfo, entry_point};
-use frostdos::hlt_loop;
+use palladiumos::hlt_loop;
 entry_point!(kernel_main);
 
 extern crate alloc;
@@ -69,18 +69,18 @@ extern crate alloc;
 use alloc::{boxed::Box, vec, vec::Vec, rc::Rc};
 // start function
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
-    use frostdos::memory::translate_addr;
+    use palladiumos::memory::translate_addr;
     use x86_64::{structures::paging::Translate, VirtAddr};
-    use frostdos::memory;
+    use palladiumos::memory;
     use x86_64::structures::paging::Page;
-    use frostdos::memory::BootInfoFrameAllocator;
-    use frostdos::allocator;
-    use frostdos::task::keyboard;
-    use frostdos::task::executor::Executor;
-    use frostdos::task::keyboard::run_shell;
+    use palladiumos::memory::BootInfoFrameAllocator;
+    use palladiumos::allocator;
+    use palladiumos::task::keyboard;
+    use palladiumos::task::executor::Executor;
+    use palladiumos::task::keyboard::run_shell;
     // welcome message
-    frostdos::shell::print_welcome();
-    frostdos::init();
+    palladiumos::shell::print_welcome();
+    palladiumos::init();
 
     let mut frame_allocator = unsafe {
         BootInfoFrameAllocator::init(&boot_info.memory_map)
@@ -97,19 +97,19 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     executor.run();
 
 
-    frostdos::hlt_loop();
+    palladiumos::hlt_loop();
 }
 
 #[cfg(not(test))]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     println!("{}", info);
-    frostdos::hlt_loop();
+    palladiumos::hlt_loop();
 }
 
 #[cfg(test)]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    frostdos::test_panic_handler(info)
+    palladiumos::test_panic_handler(info)
 }
 

@@ -213,6 +213,6 @@ pub fn close() {
     EDITOR_ACTIVE.store(false, Ordering::SeqCst);
     crate::vga_buffer::clear_screen();
     let cwd = crate::filesystem::CWD.lock().clone();
-    crate::print!("FrostDOS:{} > ", cwd);
+    crate::print!("PalladiumOS{} > ", cwd);
     crate::vga_buffer::draw_cursor();
 }
