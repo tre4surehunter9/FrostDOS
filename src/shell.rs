@@ -45,14 +45,13 @@ fn cmd_help() {
     println!("  reboot      - Reboot the system");
     println!("  panic       - Causes a system panic");
     println!("  about       - Show information about this kernel");
+    println!("  edit <file>         - Open file in the text editor");
     println!("  ls [path]           - List directory");
     println!("  cat <file>          - Print file contents");
-    println!("  write <file> <text> - Write text to file");
     println!("  mkdir <dir>         - Create directory");
     println!("  rm <file>           - Remove file or empty directory");
     println!("  cd <dir>            - Change directory");
     println!("  pwd                 - Print working directory");
-    println!("  edit <file>         - Open file in the text editor");
 }
 
 
@@ -65,14 +64,14 @@ fn cmd_clear() {
 }
 
 fn cmd_about() {
-    println!("PalladiumOS v0.3.2 - A kernel in Rust");
+    println!("PalladiumOS v0.3.3 - A kernel in Rust");
     println!("Based on Philipp Oppermann's 'Writing an OS in Rust'");
     println!("https://os.phil-opp.com/");
 }
 
 pub fn print_welcome() {
     println!("------------------");
-    println!("PalladiumOS v0.3.2");
+    println!("PalladiumOS v0.3.3");
     println!("------------------");
 }
 
@@ -127,18 +126,7 @@ fn cmd_cat(args: &str) {
     }
 }
 
-fn cmd_write(args: &str) {
-    let parts: Vec<&str> = args.splitn(2, ' ').collect();
-    if parts.len() < 2 {
-        println!("Usage: write <file> <contents>");
-        return;
-    }
-    let path = filesystem::resolve_path(parts[0]);
-    match filesystem::write_file(&path, parts[1]) {
-        Ok(())  => println!("Written."),
-        Err(e)  => println!("write: {}", e),
-    }
-}
+
 
 fn cmd_mkdir(args: &str) {
     if args.is_empty() {

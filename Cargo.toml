@@ -1,6 +1,6 @@
 [package]
 name = "palladiumos"
-version = "0.3.2"
+version = "0.3.3"
 edition = "2024"
 
 [package.metadata.bootimage]
@@ -29,6 +29,7 @@ fatfs = { git = "https://github.com/rafalh/rust-fatfs", default-features = false
 version = "0.3.11"
 default-features = false
 features = ["alloc"]
+noto-sans-mono-bitmap = "0.2.0"
 
 [dependencies.conquer-once]
 version = "0.2.0"
