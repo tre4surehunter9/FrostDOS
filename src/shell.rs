@@ -5,10 +5,10 @@ use crate::filesystem;
 use crate::alloc::string::ToString;
 
 
-pub fn process_command(input: &str) {
+pub fn process_command(input: &str) -> bool {
     let input = input.trim();
     if input.is_empty() {
-        return;
+        return false;
     }
 
     let parts: Vec<&str> = input.splitn(2, ' ').collect();
@@ -16,21 +16,22 @@ pub fn process_command(input: &str) {
     let args = if parts.len() > 1 { parts[1] } else { "" };
 
     match command {
-        "help" => cmd_help(),
-        "echo" => cmd_echo(args),
-        "clear" => cmd_clear(),
-        "about" => cmd_about(),
-        "reboot" => cmd_reboot(),
-        "panic" => cmd_panic(),
+        "help"   => { cmd_help();   true }
+        "echo"   => { cmd_echo(args); true }
+        "clear"  => { cmd_clear();  true }
+        "about"  => { cmd_about();  true }
+        "reboot" => { cmd_reboot(); true }
+        "edit"   => cmd_edit(args),
         "ls"     => cmd_ls(args),
         "cat"    => cmd_cat(args),
         "mkdir"  => cmd_mkdir(args),
         "rm"     => cmd_rm(args),
         "cd"     => cmd_cd(args),
-        "pwd"    => cmd_pwd(),
-        "edit" => cmd_edit(args),
+        "pwd"    => { cmd_pwd(); true }
+        "run"    => cmd_run(args),
         _ => {
-            println!("Unknown command: '{}'. Type 'help' for a list of commands.", command);
+            println!("Unknown command: '{}'. Type 'help'.", command);
+            false
         }
     }
 }
@@ -45,6 +46,7 @@ fn cmd_help() {
     println!("  panic               - Causes a system panic");
     println!("  about               - Show information about this kernel");
     println!("  edit <file>         - Open file in the text editor");
+    println!("  run <file>          - Run a script file");
     println!("  ls [path]           - List directory");
     println!("  cat <file>          - Print file contents");
     println!("  mkdir <dir>         - Create directory");
@@ -59,18 +61,18 @@ fn cmd_echo(args: &str) {
 }
 
 fn cmd_clear() {
-   crate::vga_buffer::clear_screen();
+    crate::vga_buffer::clear_screen();
 }
 
 fn cmd_about() {
-    println!("PalladiumOS v0.3.4 - A kernel in Rust");
+    println!("PalladiumOS v0.3.5 - A kernel in Rust");
     println!("Based on Philipp Oppermann's 'Writing an OS in Rust'");
     println!("https://os.phil-opp.com/");
 }
 
 pub fn print_welcome() {
     println!("------------------");
-    println!("PalladiumOS v0.3.4");
+    println!("PalladiumOS v0.3.5");
     println!("------------------");
 }
 
@@ -92,7 +94,7 @@ fn cmd_panic() {
     panic!("User triggered kernel panic")
 }
 
-fn cmd_ls(args: &str) {
+fn cmd_ls(args: &str) -> bool {
     let path = if args.is_empty() {
         filesystem::CWD.lock().clone()
     } else {
@@ -102,59 +104,55 @@ fn cmd_ls(args: &str) {
     let entries = filesystem::list_dir(&path);
     if entries.is_empty() {
         println!("(empty)");
-        return;
-    }
-    for (name, is_dir) in entries {
-        if is_dir {
-            println!("{}/", name);
-        } else {
-            println!("{}", name);
+    } else {
+        for (name, is_dir) in entries {
+            if is_dir { println!("{}/", name); }
+            else       { println!("{}", name); }
         }
     }
+    true
 }
 
-fn cmd_cat(args: &str) {
+fn cmd_cat(args: &str) -> bool {
     if args.is_empty() {
         println!("Usage: cat <file>");
-        return;
+        return false;
     }
     let path = filesystem::resolve_path(args);
     match filesystem::read_file(&path) {
-        Ok(contents) => println!("{}", contents),
-        Err(e)       => println!("cat: {}", e),
+        Ok(contents) => { println!("{}", contents); true }
+        Err(e)       => { println!("cat: {}", e);   false }
     }
 }
 
-
-
-fn cmd_mkdir(args: &str) {
+fn cmd_mkdir(args: &str) -> bool {
     if args.is_empty() {
         println!("Usage: mkdir <dir>");
-        return;
+        return false;
     }
     let path = filesystem::resolve_path(args);
     match filesystem::make_dir(&path) {
-        Ok(())  => {},
-        Err(e)  => println!("mkdir: {}", e),
+        Ok(())  => true,
+        Err(e)  => { println!("mkdir: {}", e); false }
     }
 }
 
-fn cmd_rm(args: &str) {
+fn cmd_rm(args: &str) -> bool {
     if args.is_empty() {
         println!("Usage: rm <file>");
-        return;
+        return false;
     }
     let path = filesystem::resolve_path(args);
     match filesystem::remove(&path) {
-        Ok(())  => {},
-        Err(e)  => println!("rm: {}", e),
+        Ok(())  => true,
+        Err(e)  => { println!("rm: {}", e); false }
     }
 }
 
-fn cmd_cd(args: &str) {
+fn cmd_cd(args: &str) -> bool {
     if args.is_empty() {
         *filesystem::CWD.lock() = "/".to_string();
-        return;
+        return true;
     }
 
     let target = if args == ".." {
@@ -171,8 +169,10 @@ fn cmd_cd(args: &str) {
 
     if filesystem::is_dir(&target) {
         *filesystem::CWD.lock() = target;
+        true
     } else {
         println!("cd: not a directory: {}", args);
+        false
     }
 }
 
@@ -181,11 +181,48 @@ fn cmd_pwd() {
     println!("{}", cwd);
 }
 
-fn cmd_edit(args: &str) {
+fn cmd_edit(args: &str) -> bool {
     if args.is_empty() {
         println!("Usage: edit <filename>");
-        return;
+        return false;
     }
     let path = crate::filesystem::resolve_path(args);
     crate::editor::open(&path);
+    true
+}
+
+fn cmd_run(args: &str) -> bool {
+    if args.is_empty() {
+        println!("Usage: run <script>");
+        return false;
+    }
+
+    let path = filesystem::resolve_path(args);
+
+    let contents = match filesystem::read_file(&path) {
+        Ok(c) => c,
+        Err(e) => {
+            println!("run: {}", e);
+            return false;
+        }
+    };
+
+    println!("Running {}...", args);
+
+    for (line_num, line) in contents.lines().enumerate() {
+        let line = line.trim();
+
+        if line.is_empty() { continue; }
+        if line.starts_with('#') { continue; }
+
+        println!("> {}", line);
+
+        if !process_command(line) {
+            println!("Script stopped at line {} due to error.", line_num + 1);
+            return false;
+        }
+    }
+
+    println!("Script completed.");
+    true
 }
