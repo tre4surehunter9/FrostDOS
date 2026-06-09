@@ -10,6 +10,7 @@ I do want to make things clear and say i used AI for some parts of my code as th
 i used AI for
 * the filesystem
 * the shell
+* text editor (as a guide)
 
 ## Features
 * Basic Shell
@@ -31,6 +32,7 @@ i used AI for
 * reboot - Reboots the system
 * panic - Causes system panic
 * Filesystem commands shown in screenshot
+* edit <file> - Opens a file in the text editor
 
 ## Credits
 Philipp Oppermann for his 'Writing an OS in Rust' guide
