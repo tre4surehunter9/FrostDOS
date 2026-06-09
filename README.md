@@ -15,6 +15,7 @@ i used AI for
 * the shell
 * text editor (as a guide)
 * finding bugs
+* guiding for implimenting stuff
 
 ## Features
 * Basic Shell
