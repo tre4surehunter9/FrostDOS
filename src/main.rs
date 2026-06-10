@@ -92,6 +92,8 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     allocator::init_heap(&mut mapper, &mut frame_allocator)
     .expect("heap initialization failed");
 
+    palladiumos::filesystem::init_default_files();
+
     let mut executor = Executor::new();
     executor.spawn(Task::new(run_shell()));
     executor.run();

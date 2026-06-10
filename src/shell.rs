@@ -65,14 +65,14 @@ fn cmd_clear() {
 }
 
 fn cmd_about() {
-    println!("PalladiumOS v0.3.5 - A kernel in Rust");
+    println!("PalladiumOS v0.3.6 - A kernel in Rust");
     println!("Based on Philipp Oppermann's 'Writing an OS in Rust'");
-    println!("https://os.phil-opp.com/");
+    println!("https://github.com/tre4surehunter9/PalladiumOS/");
 }
 
 pub fn print_welcome() {
     println!("------------------");
-    println!("PalladiumOS v0.3.5");
+    println!("PalladiumOS v0.3.6");
     println!("------------------");
 }
 
@@ -180,6 +180,7 @@ fn cmd_pwd() {
     let cwd = filesystem::CWD.lock().clone();
     println!("{}", cwd);
 }
+
 
 fn cmd_edit(args: &str) -> bool {
     if args.is_empty() {
